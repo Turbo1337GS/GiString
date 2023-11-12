@@ -33,7 +33,7 @@ For more information about the library, and to stay updated with the latest deve
 
 To use GiString in your C++ projects:
 
-1. Download the latest version of `GiString.hpp` and `GiString.cpp` from the [GiString repository](https://github.com/Turbo1337GS/gistring).
+1. Download the latest version of `GiString.hpp` and `GiString.cpp` from the [GiString repository](https://github.com/Turbo1337GS/GiString).
 2. Place the downloaded files in your project's include directory.
 3. Include the header file in your source code:
 
@@ -214,7 +214,7 @@ Due to the length and rich feature set of GiString, please refer to the header f
 - `GiString &zfill(size_t width)`
 - `size_t count_words() const`
   
-... and many more. Please refer to the [source code](https://github.com/your-github/gistring) for the full list and details.
+... and many more. Please refer to the [source code](https://github.com/Turbo1337GS/GiString) for the full list and details.
 
 ## Contributing
 
