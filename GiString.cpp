@@ -1,6 +1,7 @@
 #include "GiString.hpp"
 #include <cstdarg>
 #include <unordered_set>
+#include <filesystem>
 
 GiString::GiString(const std::string &str) : internalString(str)
 {
@@ -15,6 +16,45 @@ GiString GiString::toLowerCase() const
                    { return std::tolower(c); });
     return GiString(lowerCaseString);
 }
+
+
+GiString GiString::ToUtf8()
+{
+    std::filesystem::path p = internalString;
+    
+    std::string utf8Str = p.u8string();
+  
+    return GiString(utf8Str);
+}
+GiString GiString::ToAscii() {
+    // Uproszczona konwersja, może wymagać rozbudowy!
+    std::string asciiStr = internalString;
+    asciiStr.erase(remove_if(asciiStr.begin(), asciiStr.end(), [](unsigned char c) {
+        return static_cast<unsigned>(c) > 127; 
+    }), asciiStr.end());
+    return GiString(asciiStr);
+}
+
+std::wstring GiString::ToWstring() const {
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(internalString);
+}
+
+GiString GiString::FromUtf8ToUtf16() {
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    std::wstring utf16Str = converter.from_bytes(internalString);
+    std::string utf16AsBytes(reinterpret_cast<const char*>(utf16Str.data()), utf16Str.size() * sizeof(wchar_t));
+    return GiString(utf16AsBytes);
+}
+
+
+GiString GiString::FromUtf8ToUtf32() {
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
+    std::u32string utf32Str = converter.from_bytes(internalString);
+    std::string utf32AsBytes(reinterpret_cast<const char*>(utf32Str.data()), utf32Str.size() * sizeof(char32_t));
+    return GiString(utf32AsBytes);
+}
+
 
 size_t GiString::Size() const
 {

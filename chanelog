@@ -1,0 +1,5 @@
+ # Added 
+    GiString ToUtf8
+    GiString ToAscii();
+    GiString FromUtf8ToUtf16();
+    GiString FromUtf8ToUtf32();

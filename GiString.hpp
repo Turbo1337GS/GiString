@@ -1,6 +1,7 @@
 #ifndef GISTRING_HPP
 #define GISTRING_HPP
-
+#include <codecvt>
+#include <locale>
 #include <string>
 #include <algorithm>
 #include <iostream>
@@ -68,6 +69,14 @@ public:
     // Size and Clear
     size_t Size() const;
     void Clear();
+
+    // converting
+    GiString ToUtf8();
+    GiString ToAscii();
+    GiString FromUtf8ToUtf16();
+    GiString FromUtf8ToUtf32();
+    std::wstring ToWstring() const;
+
 
     // Boolean Conversion
     GiString &toBool(const bool &v);
