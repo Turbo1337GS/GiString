@@ -1,5 +1,7 @@
  # Added 
-    GiString ToUtf8
-    GiString ToAscii();
-    GiString FromUtf8ToUtf16();
-    GiString FromUtf8ToUtf32();
+
+    GiString ToHex();
+    GiString FromHex();
+    GiString EncodeUrl();
+    GiString toHtmlEscaped();
+    std::u16string toStdU16String();

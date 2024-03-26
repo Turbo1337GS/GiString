@@ -17,45 +17,66 @@ GiString GiString::toLowerCase() const
     return GiString(lowerCaseString);
 }
 
-
 GiString GiString::ToUtf8()
 {
     std::filesystem::path p = internalString;
-    
+
     std::string utf8Str = p.u8string();
-  
+
     return GiString(utf8Str);
 }
-GiString GiString::ToAscii() {
+GiString GiString::ToAscii()
+{
     // Uproszczona konwersja, może wymagać rozbudowy!
     std::string asciiStr = internalString;
-    asciiStr.erase(remove_if(asciiStr.begin(), asciiStr.end(), [](unsigned char c) {
-        return static_cast<unsigned>(c) > 127; 
-    }), asciiStr.end());
+    asciiStr.erase(remove_if(asciiStr.begin(), asciiStr.end(), [](unsigned char c)
+                             { return static_cast<unsigned>(c) > 127; }),
+                   asciiStr.end());
     return GiString(asciiStr);
 }
 
-std::wstring GiString::ToWstring() const {
+std::wstring GiString::ToWstring() const
+{
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     return converter.from_bytes(internalString);
 }
 
-GiString GiString::FromUtf8ToUtf16() {
+GiString GiString::FromUtf8ToUtf16()
+{
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     std::wstring utf16Str = converter.from_bytes(internalString);
-    std::string utf16AsBytes(reinterpret_cast<const char*>(utf16Str.data()), utf16Str.size() * sizeof(wchar_t));
+    std::string utf16AsBytes(reinterpret_cast<const char *>(utf16Str.data()), utf16Str.size() * sizeof(wchar_t));
     return GiString(utf16AsBytes);
 }
 
-
-GiString GiString::FromUtf8ToUtf32() {
+GiString GiString::FromUtf8ToUtf32()
+{
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
     std::u32string utf32Str = converter.from_bytes(internalString);
-    std::string utf32AsBytes(reinterpret_cast<const char*>(utf32Str.data()), utf32Str.size() * sizeof(char32_t));
+    std::string utf32AsBytes(reinterpret_cast<const char *>(utf32Str.data()), utf32Str.size() * sizeof(char32_t));
     return GiString(utf32AsBytes);
 }
 
-
+GiString GiString::ToHex() const
+{
+    std::stringstream hexStream;
+    for (unsigned char c : internalString)
+    {
+        hexStream << std::hex << std::setfill('0') << std::setw(2) << static_cast<int>(c);
+    }
+    return GiString(hexStream.str());
+}
+GiString GiString::FromHex(const std::string& hexStr)
+{
+    std::string asciiStr;
+    for (size_t i = 0; i < hexStr.length(); i += 2)
+    {
+        std::string byteString = hexStr.substr(i, 2);
+        char byte = static_cast<char>(std::stoi(byteString, nullptr, 16));
+        asciiStr.push_back(byte);
+    }
+    return GiString(asciiStr);
+}
 size_t GiString::Size() const
 {
     return internalString.size();
@@ -902,80 +923,68 @@ std::string bl(const bool &v)
 {
     return v ? "True" : "False";
 }
-
-void GiString::Demo()
-{
-    GiString myString("Hello World!");
-    std::cout << "Constructed with std::string: " << myString.getValue() << std::endl;
-
-    // toLowerCase
-    std::cout << "Lower case: " << myString.toLowerCase().getValue() << std::endl;
-
-    // Size
-    std::cout << "Size: " << myString.Size() << std::endl;
-
-    // Clear
-    myString.Clear();
-    std::cout << "Clear: " << myString.getValue() << " (size: " << myString.Size() << ")" << std::endl;
-
-    // setValue
-    myString.setValue("Fresh Start");
-    std::cout << "SetValue: " << myString.getValue() << std::endl;
-
-    // append
-    myString.append(" Again");
-    std::cout << "Append: " << myString.getValue() << std::endl;
-
-    // insert
-    myString.insert(6, "<Inserted>");
-    std::cout << "Insert: " << myString.getValue() << std::endl;
-
-    // toBool
-    myString.toBool(true);
-    std::cout << "toBool (true): " << myString.getValue() << std::endl;
-
-    // erase (overloads)
-    myString.setValue("This is a test.");
-    myString.erase('i'); // Removes all 'i' from the string
-    std::cout << "Erase character 'i': " << myString.getValue() << std::endl;
-    myString.setValue("This is a test.");
-    myString.erase("is"); // Removes first occurrence of "is"
-    std::cout << "Erase substring 'is': " << myString.getValue() << std::endl;
-
-    // replace
-    myString.setValue("This is a test.");
-    myString.replace("is", "XX");
-    std::cout << "Replace 'is' with 'XX': " << myString.getValue() << std::endl;
-
-    // substr
-    myString.setValue("This is a test.");
-    myString.substr(5, 7); // Warning: this actually erases from index 5 to 7, not returning substring!
-    std::cout << "Substring (incorrect function, it erases instead): " << myString.getValue() << std::endl;
-
-    // compare
-    std::cout << "Compare 'ThXXX a test.': " << myString.compare("ThXXX a test.").Status << std::endl;
-
-    // find
-    myString.setValue("Find the character sequence.");
-    std::cout << "Find 'the': " << myString.find("the").Status << std::endl;
-
-    //  more complex operations:
-    std::cout << "Reversed: " << myString.reverse().getValue() << std::endl;
-    std::cout << "Is numeric: " << bl(myString.is_numeric()) << std::endl; // Podobnie jak poprzednio, bl() jest funkcją poza klasą
-    std::cout << "Is alphanumeric: " << bl(myString.is_alphanumeric()) << std::endl;
-
-    GiString email("example@example.com");
-    bool isEmail = email.matches_regex(R"((\w+)(\.\w+)*@(\w+)(\.\w+))");
-    std::cout << "Is valid email (" << email.getValue() << "): " << bl(isEmail) << std::endl;
-
-    GiString other1("1");
-    GiString other2("1");
-    
-std::cout<<"Other = " << other1.append(other2.getValue()).getValue() << std::endl;
-
-
-
-    std::cout << "End of GiString Demo." << std::endl;
-
-
+GiString GiString::ToBits() const {
+    std::string bits;
+    for (char c : internalString) {
+        std::bitset<8> b(static_cast<unsigned char>(c)); 
+        bits += b.to_string();
+    }
+    return GiString(bits);
 }
+
+
+GiString GiString::FromBits(const std::string& bits) {
+    std::string text;
+    for (size_t i = 0; i < bits.size(); i += 8) {
+        std::string part = bits.substr(i, 8);
+        try {
+            std::bitset<8> set(part);
+            char c = static_cast<char>(set.to_ulong());
+            text.push_back(c);
+        } catch(const std::invalid_argument& e) {
+            std::cerr << "Invalid argument: " << e.what() << '\n';
+            break;
+        }
+    }
+    return GiString(text);
+}
+
+GiString GiString::EncodeUrl() const {
+    std::ostringstream encoded;
+    for (char c : internalString) {
+        if (isalnum(static_cast<unsigned char>(c)) || c == '-' || c == '_' || c == '.' || c == '~') {
+            encoded << c;
+        } else {
+            encoded << '%' << std::uppercase << std::setw(2) << std::setfill('0')
+                    << static_cast<int>(static_cast<unsigned char>(c));
+        }
+    }
+    return GiString(encoded.str());
+}
+GiString GiString::toCaseFolded() const {
+        std::string lowerCaseValue = internalString;
+        std::transform(lowerCaseValue.begin(), lowerCaseValue.end(), lowerCaseValue.begin(),
+                       [](unsigned char c) -> unsigned char { return std::tolower(c); });
+        return GiString(lowerCaseValue);
+    }
+
+GiString GiString::toHtmlEscaped() const {
+        std::ostringstream escaped;
+        for (char c : internalString) {
+            switch (c) {
+                case '&':  escaped << "&amp;"; break;
+                case '\"': escaped << "&quot;"; break;
+                case '\'': escaped << "&#39;"; break;
+                case '<':  escaped << "&lt;"; break;
+                case '>':  escaped << "&gt;"; break;
+                default:   escaped << c; break;
+                //  TODO: all list all escapes  
+            }
+        }
+        return GiString(escaped.str());
+    }
+std::u16string GiString::toStdU16String() const {
+        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+        // Konwertuj UTF-8 (std::string) na UTF-16 (std::u16string)
+        return converter.from_bytes(internalString);
+    }

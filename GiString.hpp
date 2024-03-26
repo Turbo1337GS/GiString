@@ -19,6 +19,7 @@
 #include <cmath>
 #include <iterator>
 #include <numeric>
+#include <bit>
 class GiString {
 private:
     std::string internalString;
@@ -65,6 +66,18 @@ public:
 
     // Case Conversion
     GiString toLowerCase() const;
+
+    GiString FromHex(const std::string &hexStr);
+    GiString ToHex() const; 
+    GiString ToBits() const;
+    static GiString FromBits(const std::string& bits);
+    GiString EncodeUrl() const;
+
+    GiString toCaseFolded() const;
+
+    GiString toHtmlEscaped() const;
+
+    std::u16string toStdU16String() const;
 
     // Size and Clear
     size_t Size() const;
@@ -161,7 +174,6 @@ public:
     bool to_bool() const;
     bool matches_regex(const std::string &pattern) const;
     size_t count_words() const;
-    void Demo();
 };
 
 #endif // GISTRING_HPP
